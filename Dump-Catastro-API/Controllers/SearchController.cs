@@ -52,7 +52,7 @@ namespace Dump_Catastro_API.Controllers
                     break;
             }
 
-            var construcciones = _unitOfWork.VistaConstruccioneRepository.Search(c => codigos.Contains(c.Codigo));
+            var construcciones = _unitOfWork.VistaConstruccioneRepository.Search(c => codigos.Contains(c.Codigo)).ToList();
 
             var response = new {
                 error = false,

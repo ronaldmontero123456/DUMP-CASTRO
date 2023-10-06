@@ -178,8 +178,13 @@ public partial class DbcatastroContext : DbContext
     public virtual DbSet<Zona> Zonas { get; set; }
 
     public virtual DbSet<Zonificacion> Zonificacions { get; set; }
+
     public virtual DbSet<VistaTerreno> VistaTerrenos { get; set; }
+
     public virtual DbSet<VistaCatastro> VistaCatastros { get; set; }
+
+    public virtual DbSet<VistaConstruccione> VistaConstrucciones { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseNpgsql("Server=ec2-100-24-63-57.compute-1.amazonaws.com;Port=5432;Database=dbcatastro;User Id=postgres;Password=administrador;", x => x.UseNetTopologySuite());
@@ -2447,6 +2452,46 @@ public partial class DbcatastroContext : DbContext
                 .HasColumnName("properties");
             entity.Property(e => e.Type).HasColumnName("type");
         });
+
+
+        modelBuilder.Entity<VistaConstruccione>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vista_construcciones", "catastro");
+
+            entity.Property(e => e.Aire).HasColumnName("aire");
+            entity.Property(e => e.Anyo)
+                .HasColumnType("character varying")
+                .HasColumnName("anyo");
+            entity.Property(e => e.Ascensores).HasColumnName("ascensores");
+            entity.Property(e => e.Calefaccion).HasColumnName("calefaccion");
+            entity.Property(e => e.Cod).HasColumnName("cod");
+            entity.Property(e => e.Codigo)
+                .HasColumnType("character varying")
+                .HasColumnName("codigo");
+            entity.Property(e => e.Conservacion).HasColumnName("conservacion");
+            entity.Property(e => e.Dormitorios).HasColumnName("dormitorios");
+            entity.Property(e => e.Escalera).HasColumnName("escalera");
+            entity.Property(e => e.Estadoconservacion)
+                .HasColumnType("character varying")
+                .HasColumnName("estadoconservacion");
+            entity.Property(e => e.Geometry)
+                .HasColumnType("geometry(MultiPolygon,32719)")
+                .HasColumnName("geometry");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Idconservacion).HasColumnName("idconservacion");
+            entity.Property(e => e.Idrevestimiento).HasColumnName("idrevestimiento");
+            entity.Property(e => e.Lavanderia).HasColumnName("lavanderia");
+            entity.Property(e => e.Plantas).HasColumnName("plantas");
+            entity.Property(e => e.Revestimiento)
+                .HasColumnType("character varying")
+                .HasColumnName("revestimiento");
+            entity.Property(e => e.Sanitarios).HasColumnName("sanitarios");
+            entity.Property(e => e.Servicio).HasColumnName("servicio");
+            entity.Property(e => e.Tanque).HasColumnName("tanque");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

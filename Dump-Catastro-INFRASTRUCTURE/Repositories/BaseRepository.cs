@@ -24,9 +24,9 @@ namespace Dump_Catastro_INFRASTRUCTURE.Repositories
             dbSet.Remove(entity);
         }
 
-        public IEnumerable<T> GetAll()
+        public IQueryable<T> GetAll()
         {
-            return dbSet.AsNoTracking().AsEnumerable();
+            return dbSet.AsNoTracking().AsQueryable();
         }
 
         public async Task<T> GetById(int id)

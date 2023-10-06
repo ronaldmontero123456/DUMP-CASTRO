@@ -14,11 +14,9 @@ namespace Dump_Catastro_API.Controllers
     public class SearchController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly DbcatastroContext _context;
-        public SearchController(IUnitOfWork unitOfWork, DbcatastroContext context)
+        public SearchController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _context = context;
         }
 
 

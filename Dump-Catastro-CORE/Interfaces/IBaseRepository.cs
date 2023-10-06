@@ -4,7 +4,7 @@ namespace Dump_Catastro_CORE.Interfaces
 {
     public interface IBaseRepository<T>
     {
-        IEnumerable<T> GetAll();
+        IQueryable<T> GetAll();
         Task<T> GetById(int id);
         Task Add(T entity);
         void Update(T entity);

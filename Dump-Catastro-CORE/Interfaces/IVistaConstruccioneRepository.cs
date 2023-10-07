@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Dump_Catastro_CORE.Interfaces
 {
-    public interface IVistaConstruccioneRepository: IBaseRepository<VistaConstruccione>
+    public interface IVistaConstruccioneRepository: IBaseRepository<VistaConstruccionesJbo>
     {
     }
 }

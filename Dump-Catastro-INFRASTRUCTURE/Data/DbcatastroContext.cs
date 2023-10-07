@@ -182,8 +182,8 @@ public partial class DbcatastroContext : DbContext
     public virtual DbSet<VistaTerreno> VistaTerrenos { get; set; }
 
     public virtual DbSet<VistaCatastro> VistaCatastros { get; set; }
-
     public virtual DbSet<VistaConstruccione> VistaConstrucciones { get; set; }
+    public virtual DbSet<VistaConstruccionesJbo> VistaConstruccionesJbos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
@@ -2444,9 +2444,16 @@ public partial class DbcatastroContext : DbContext
                 .HasNoKey()
                 .ToView("vista_catastro", "catastro");
 
+            entity.Property(e => e.Codigo)
+                .HasColumnType("character varying")
+                .HasColumnName("codigo");
+            entity.Property(e => e.Documento).HasColumnName("documento");
             entity.Property(e => e.Geometry)
                 .HasColumnType("geometry(MultiPolygon,32719)")
                 .HasColumnName("geometry");
+            entity.Property(e => e.Nombre)
+                .HasColumnType("character varying")
+                .HasColumnName("nombre");
             entity.Property(e => e.Properties)
                 .HasColumnType("jsonb")
                 .HasColumnName("properties");
@@ -2490,6 +2497,25 @@ public partial class DbcatastroContext : DbContext
             entity.Property(e => e.Sanitarios).HasColumnName("sanitarios");
             entity.Property(e => e.Servicio).HasColumnName("servicio");
             entity.Property(e => e.Tanque).HasColumnName("tanque");
+        });
+
+
+        modelBuilder.Entity<VistaConstruccionesJbo>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("vista_construcciones_jbo", "catastro");
+
+            entity.Property(e => e.Codigo)
+                .HasColumnType("character varying")
+                .HasColumnName("codigo");
+            entity.Property(e => e.Geometry)
+                .HasColumnType("geometry(MultiPolygon,32719)")
+                .HasColumnName("geometry");
+            entity.Property(e => e.Properties)
+                .HasColumnType("jsonb")
+                .HasColumnName("properties");
+            entity.Property(e => e.Type).HasColumnName("type");
         });
 
 

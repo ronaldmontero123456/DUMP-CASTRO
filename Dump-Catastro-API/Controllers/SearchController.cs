@@ -4,6 +4,11 @@ using Dump_Catastro_INFRASTRUCTURE.Data;
 using Dump_Catastro_INFRASTRUCTURE.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
+using Npgsql;
+using NpgsqlTypes;
+using System.Data;
 using System.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -23,44 +28,111 @@ namespace Dump_Catastro_API.Controllers
         [HttpGet(Name = nameof(GetSearch))]
         public IActionResult GetSearch(string query, string type)
         {
-            List<string> codigos = new List<string>();
-            List<VistaTerreno> terrenos = new List<VistaTerreno>();
+            List<string> codigos = new ();
+
+            var geoJsonWriter = new GeoJsonWriter();
 
             switch (type)
             {
                 case "1":
-                    terrenos = _unitOfWork.VistaTerrenosRepository.Search(vista => vista.Nombre.ToUpper().Contains(query.ToUpper()) || vista.Codigo.ToUpper().Contains(query.ToUpper())).ToList();
-                    codigos.Add(query);
-                    break;
+                    var terrenos1 = _unitOfWork.VistaCatastroRepository.Search(vista => vista.Nombre.ToUpper().Contains(query.ToUpper()) || vista.Codigo.ToUpper().Contains(query.ToUpper())).Select(vista => new
+                    {
+                        vista.Properties,
+                        vista.Type,
+                        Geometry = geoJsonWriter.Write(vista.Geometry) 
+                       });
+
+                    var construcciones1 = _unitOfWork.VistaConstruccioneRepository.Search(c => c.Codigo == query).Select(vista => new
+                    {
+                        vista.Properties,
+                        vista.Type,
+                        Geometry = geoJsonWriter.Write(vista.Geometry)
+                    });
+
+                    var response1 = new
+                    {
+                        error = false,
+                        found = true,
+                        message = "",
+                        data = new { terrenos = terrenos1, construcciones = construcciones1 }
+                    };
+
+                    return Ok(response1);
                 case "2":
-                    terrenos = _unitOfWork.VistaTerrenosRepository.Search(vista => vista.Nombre.ToUpper().Contains(query.ToUpper()) || vista.Codigo.ToUpper().Contains(query.ToUpper())).ToList();
-                    codigos = terrenos.Select(vista => vista.Codigo).ToList();
-                    break;
+                    
+                    var terrenos2 = _unitOfWork.VistaCatastroRepository.Search(vista => vista.Nombre.ToUpper().Contains(query.ToUpper()) || vista.Codigo.ToUpper().Contains(query.ToUpper())).Select(vista => new
+                    {
+                        vista.Properties,
+                        vista.Type,
+                        Geometry = geoJsonWriter.Write(vista.Geometry),
+                        vista.Codigo
+                    });
+
+                    codigos = terrenos2.Select(vista => vista.Codigo).ToList();
+                    var construcciones2 = _unitOfWork.VistaConstruccioneRepository.Search(c => codigos.Contains(c.Codigo)).Select(vista => new
+                    {
+                        vista.Properties,
+                        vista.Type,
+                        Geometry = geoJsonWriter.Write(vista.Geometry)
+                    });
+
+                    var response2 = new
+                    {
+                        error = false,
+                        found = true,
+                        message = "",
+                        data = new { terrenos = terrenos2, construcciones = construcciones2 }
+                    };
+
+
+                    return Ok(response2);
                 case "3":
 
                     bool isvalid = int.TryParse(query, out int result);
 
-                    if(!isvalid)
+                    if (!isvalid)
                     {
                         return BadRequest("Favor de enviar un valor numerico");
                     }
 
-                    terrenos = _unitOfWork.VistaTerrenosRepository.Search(vista => vista.Documento == result).ToList();
-                    codigos = terrenos.Select(vista => vista.Codigo).ToList();
-                    break;
+                    var terrenos3 = _unitOfWork.VistaCatastroRepository.Search(vista => vista.Documento == result).Select(vista => new
+                    {
+                        vista.Properties,
+                        vista.Type,
+                        Geometry = geoJsonWriter.Write(vista.Geometry),
+                        vista.Codigo
+                    });
+
+                    codigos = terrenos3.Select(vista => vista.Codigo).ToList();
+
+                    var construcciones3 = _unitOfWork.VistaConstruccioneRepository.Search(c => codigos.Contains(c.Codigo)).Select(vista => new
+                    {
+                        vista.Properties,
+                        vista.Type,
+                        Geometry = geoJsonWriter.Write(vista.Geometry)
+                    });
+
+                    var response3 = new
+                    {
+                        error = false,
+                        found = true,
+                        message = "",
+                        data = new { terrenos = terrenos3, construcciones = construcciones3 }
+                    };
+
+                    return Ok(response3);
+                default:
+
+                    var response = new
+                    {
+                        error = true,
+                        found = false,
+                        message = "FAVOR ENVIAR UN TIPO VALIDO",
+                        data = new { }
+                    };
+                    return BadRequest(response);
+
             }
-
-            var construcciones = _unitOfWork.VistaConstruccioneRepository.Search(c => codigos.Contains(c.Codigo)).ToList();
-
-            var response = new {
-                error = false,
-                found = true,
-                message = "",
-                data = new { terrenos, construcciones}
-            };
-
-
-            return Ok(response);
         }
 
     }

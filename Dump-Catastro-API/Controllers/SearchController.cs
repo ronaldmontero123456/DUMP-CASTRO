@@ -59,16 +59,17 @@ namespace Dump_Catastro_API.Controllers
 
                     return Ok(response1);
                 case "2":
-                    
-                    var terrenos2 = _unitOfWork.VistaCatastroRepository.Search(vista => vista.Nombre.ToUpper().Contains(query.ToUpper()) || vista.Codigo.ToUpper().Contains(query.ToUpper())).Select(vista => new
+
+                    IQueryable<VistaCatastro> resulttoselect = _unitOfWork.VistaCatastroRepository.Search(vista => vista.Nombre.ToUpper().Contains(query.ToUpper()) || vista.Codigo.ToUpper().Contains(query.ToUpper()));
+
+                    var terrenos2 = resulttoselect.Select(vista => new
                     {
                         vista.Properties,
                         vista.Type,
-                        Geometry = geoJsonWriter.Write(vista.Geometry),
-                        vista.Codigo
+                        Geometry = geoJsonWriter.Write(vista.Geometry)
                     });
 
-                    codigos = terrenos2.Select(vista => vista.Codigo).ToList();
+                    codigos = resulttoselect.Select(vista => vista.Codigo).ToList();
                     var construcciones2 = _unitOfWork.VistaConstruccioneRepository.Search(c => codigos.Contains(c.Codigo)).Select(vista => new
                     {
                         vista.Properties,
@@ -95,15 +96,17 @@ namespace Dump_Catastro_API.Controllers
                         return BadRequest("Favor de enviar un valor numerico");
                     }
 
-                    var terrenos3 = _unitOfWork.VistaCatastroRepository.Search(vista => vista.Documento == result).Select(vista => new
+                    IQueryable<VistaCatastro> resulttoselect1 = _unitOfWork.VistaCatastroRepository.Search(vista => vista.Documento == result);
+
+                    var terrenos3 = resulttoselect1.Select(vista => new
                     {
                         vista.Properties,
                         vista.Type,
-                        Geometry = geoJsonWriter.Write(vista.Geometry),
-                        vista.Codigo
+                        Geometry = geoJsonWriter.Write(vista.Geometry)
                     });
 
-                    codigos = terrenos3.Select(vista => vista.Codigo).ToList();
+                    codigos = resulttoselect1.Select(vista => vista.Codigo).ToList();
+
 
                     var construcciones3 = _unitOfWork.VistaConstruccioneRepository.Search(c => codigos.Contains(c.Codigo)).Select(vista => new
                     {

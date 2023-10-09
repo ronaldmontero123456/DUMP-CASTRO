@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
+using Newtonsoft.Json;
 using Npgsql;
 using NpgsqlTypes;
 using System.Data;
@@ -37,16 +38,16 @@ namespace Dump_Catastro_API.Controllers
                 case "1":
                     var terrenos1 = _unitOfWork.VistaCatastroRepository.Search(vista => vista.Nombre.ToUpper().Contains(query.ToUpper()) || vista.Codigo.ToUpper().Contains(query.ToUpper())).Select(vista => new
                     {
-                        vista.Properties,
+                        Properties = JsonConvert.DeserializeObject<VistaTerreno>(vista.Properties),
                         vista.Type,
-                        Geometry = geoJsonWriter.Write(vista.Geometry) 
-                       });
+                        Geometry = JsonConvert.DeserializeObject<GeoJsonPolygon>(geoJsonWriter.Write(vista.Geometry))
+                    });
 
                     var construcciones1 = _unitOfWork.VistaConstruccioneRepository.Search(c => c.Codigo == query).Select(vista => new
                     {
-                        vista.Properties,
+                        Properties = JsonConvert.DeserializeObject<VistaConstruccione>(vista.Properties),
                         vista.Type,
-                        Geometry = geoJsonWriter.Write(vista.Geometry)
+                        Geometry = JsonConvert.DeserializeObject<GeoJsonPolygon>(geoJsonWriter.Write(vista.Geometry))
                     });
 
                     var response1 = new
@@ -64,17 +65,17 @@ namespace Dump_Catastro_API.Controllers
 
                     var terrenos2 = resulttoselect.Select(vista => new
                     {
-                        vista.Properties,
+                        Properties = JsonConvert.DeserializeObject<VistaTerreno>(vista.Properties),
                         vista.Type,
-                        Geometry = geoJsonWriter.Write(vista.Geometry)
+                        Geometry = JsonConvert.DeserializeObject<GeoJsonPolygon>(geoJsonWriter.Write(vista.Geometry))
                     });
 
                     codigos = resulttoselect.Select(vista => vista.Codigo).ToList();
                     var construcciones2 = _unitOfWork.VistaConstruccioneRepository.Search(c => codigos.Contains(c.Codigo)).Select(vista => new
                     {
-                        vista.Properties,
+                        Properties = JsonConvert.DeserializeObject<VistaConstruccione>(vista.Properties),
                         vista.Type,
-                        Geometry = geoJsonWriter.Write(vista.Geometry)
+                        Geometry = JsonConvert.DeserializeObject<GeoJsonPolygon>(geoJsonWriter.Write(vista.Geometry))
                     });
 
                     var response2 = new
@@ -96,13 +97,13 @@ namespace Dump_Catastro_API.Controllers
                         return BadRequest("Favor de enviar un valor numerico");
                     }
 
-                    IQueryable<VistaCatastro> resulttoselect1 = _unitOfWork.VistaCatastroRepository.Search(vista => vista.Documento == result);
+                    List<VistaCatastro> resulttoselect1 = _unitOfWork.VistaCatastroRepository.Search(vista => vista.Documento == result).ToList();
 
                     var terrenos3 = resulttoselect1.Select(vista => new
                     {
-                        vista.Properties,
+                        Properties = JsonConvert.DeserializeObject<VistaTerreno>(vista.Properties),
                         vista.Type,
-                        Geometry = geoJsonWriter.Write(vista.Geometry)
+                        Geometry = JsonConvert.DeserializeObject<GeoJsonPolygon>(geoJsonWriter.Write(vista.Geometry))
                     });
 
                     codigos = resulttoselect1.Select(vista => vista.Codigo).ToList();
@@ -110,9 +111,9 @@ namespace Dump_Catastro_API.Controllers
 
                     var construcciones3 = _unitOfWork.VistaConstruccioneRepository.Search(c => codigos.Contains(c.Codigo)).Select(vista => new
                     {
-                        vista.Properties,
+                        Properties = JsonConvert.DeserializeObject<VistaConstruccione>(vista.Properties),
                         vista.Type,
-                        Geometry = geoJsonWriter.Write(vista.Geometry)
+                        Geometry = JsonConvert.DeserializeObject<GeoJsonPolygon>(geoJsonWriter.Write(vista.Geometry))
                     });
 
                     var response3 = new

@@ -8,6 +8,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContexts(builder.Configuration);
 builder.Services.AddServices();
 
+//cors
+builder.Services.AddCors(options => options.AddPolicy("AllowWepApp",
+                            builder => builder.AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()));
+
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -33,6 +39,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors("AllowWepApp");
 
 app.MapControllers();
 

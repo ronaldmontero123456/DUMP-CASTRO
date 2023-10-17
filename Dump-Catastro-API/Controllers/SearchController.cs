@@ -127,15 +127,17 @@ namespace Dump_Catastro_API.Controllers
                     return Ok(response3);
                 default:
 
+                    var building = _unitOfWork.VistaTerrenosRepository.GetAll().Select(t => t.Codigo).ToList();
+
                     var response = new
                     {
-                        error = true,
-                        found = false,
-                        message = "FAVOR ENVIAR UN TIPO VALIDO",
-                        data = new { }
+                        error = false,
+                        found = true,
+                        message = "",
+                        data = building
                     };
-                    return BadRequest(response);
 
+                    return Ok(response);
             }
         }
 

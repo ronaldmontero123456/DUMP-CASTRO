@@ -101,6 +101,8 @@ public partial class DbcatastroContext : DbContext
 
     public virtual DbSet<EdiMurosInt> EdiMurosInts { get; set; }
 
+    public virtual DbSet<Formulariocatastral> Formulariocatastrals { get; set; }
+
     public virtual DbSet<EdiPiso> EdiPisos { get; set; }
 
     public virtual DbSet<Ejevia> Ejevias { get; set; }
@@ -2516,6 +2518,22 @@ public partial class DbcatastroContext : DbContext
                 .HasColumnType("jsonb")
                 .HasColumnName("properties");
             entity.Property(e => e.Type).HasColumnName("type");
+        });
+
+
+        modelBuilder.Entity<Formulariocatastral>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("formulariocatastral_pkey");
+
+            entity.ToTable("formulariocatastral", "catastro");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Codigo)
+                .HasMaxLength(255)
+                .HasColumnName("codigo");
+            entity.Property(e => e.FormJson)
+                .HasColumnType("json")
+                .HasColumnName("form_json");
         });
 
 
